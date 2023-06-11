@@ -4,17 +4,17 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  Min,
 } from 'class-validator';
-import {
-  EMAIL_FORMAT,
-  PASSWORD_IS_REQUIRED,
-} from '../../auth/constant/message';
+import { INVALID_VALUE } from 'src/utils/message';
+import { INVALID_PASSWORD_FORMAT } from '../constants/messages';
 
-export class CreateUserDTO {
-  @IsString({ message: PASSWORD_IS_REQUIRED })
+export class CreateUserDto {
+  @IsString({ message: INVALID_VALUE })
+  @Min(6, { message: INVALID_PASSWORD_FORMAT })
   password: string;
 
-  @IsEmail({}, { message: EMAIL_FORMAT })
+  @IsEmail({}, { message: INVALID_VALUE })
   email: string;
 
   @IsString()

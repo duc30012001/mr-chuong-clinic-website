@@ -10,16 +10,17 @@ import * as argon from 'argon2';
 import { Response } from 'express';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
+import { ResponseDto } from 'src/utils/dto';
 import { Status } from 'src/utils/enum';
 import { Repository } from 'typeorm';
-import { CreateUserDTO } from '../user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import {
   LOGIN_SUCCESS,
   SIGN_UP_SUCCESS,
   USER_NOT_ACTIVE,
   USER_NOT_FOUND,
 } from './constant/message';
-import { LoginDTO } from './dto';
+import { LoginDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -30,11 +31,11 @@ export class AuthService {
     private userService: UserService,
   ) {}
 
-  async login(loginDTO: LoginDTO, res: Response): Promise<Response> {
+  async login(loginDto: LoginDto, res: Response): Promise<Response> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     queryBuilder.addSelect('user.password').where({
-      email: loginDTO.email,
+      email: loginDto.email,
     });
 
     const { entities: userList } = await queryBuilder.getRawAndEntities();
@@ -45,7 +46,7 @@ export class AuthService {
     const dataUser = userList[0];
     const isPasswordMatched = await argon.verify(
       dataUser.password,
-      loginDTO.password,
+      loginDto.password,
     );
 
     if (!isPasswordMatched) {
@@ -56,7 +57,7 @@ export class AuthService {
       throw new NotAcceptableException(USER_NOT_ACTIVE);
     }
 
-    const token = await this.generateToken(loginDTO.email, dataUser.id);
+    const token = await this.generateToken(loginDto.email, dataUser.id);
 
     return res.status(HttpStatus.OK).json({
       message: LOGIN_SUCCESS,
@@ -64,13 +65,12 @@ export class AuthService {
     });
   }
 
-  async signUp(signUpDTO: CreateUserDTO, res: Response): Promise<Response> {
-    return this.userService.addUserToDatabase(
-      signUpDTO,
-      res,
-      Status.PENDING,
-      SIGN_UP_SUCCESS,
-    );
+  async signUp(signUpDto: CreateUserDto): Promise<ResponseDto> {
+    const dataUser = {
+      ...signUpDto,
+      status: Status.PENDING,
+    };
+    return this.userService.addUserToDatabase(dataUser, SIGN_UP_SUCCESS);
   }
 
   async generateToken(
@@ -78,7 +78,7 @@ export class AuthService {
     userId: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = {
-      sub: userId,
+      id: userId,
       email,
     };
 
