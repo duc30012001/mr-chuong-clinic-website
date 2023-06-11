@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
-import { entities } from './entity';
 import { UserModule } from './user/user.module';
+import { entities } from './utils/entities';
 
 dotenv.config();
 

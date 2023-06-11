@@ -1,4 +1,5 @@
 export const USER_NOT_FOUND = 'Email hoặc mật khẩu không đúng';
+export const USER_NOT_ACTIVE = 'Tài khoản chưa được kích hoạt';
 export const LOGIN_SUCCESS = 'Đăng nhập thành công';
 export const EMAIL_ALREADY_EXIST = 'Tài khoản đã tồn tại';
 export const SIGN_UP_SUCCESS = 'Đăng ký thành công';

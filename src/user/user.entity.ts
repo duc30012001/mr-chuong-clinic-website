@@ -1,14 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Status } from 'src/utils/enum';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'user' })
 export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column({ default: '' })
   full_name: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ unique: true })
@@ -19,6 +20,9 @@ export class UserEntity {
 
   @Column({ nullable: true })
   avatar_url: string;
+
+  @Column({ default: Status.ACTIVE })
+  status: Status;
 
   @Column({ nullable: true })
   user_creator: string;

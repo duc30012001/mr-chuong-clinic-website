@@ -1,18 +1,25 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon from 'argon2';
 import { Response } from 'express';
 import { UserEntity } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
+import { Status } from 'src/utils/enum';
 import { Repository } from 'typeorm';
+import { CreateUserDTO } from '../user/dto/create-user.dto';
 import {
-  EMAIL_ALREADY_EXIST,
   LOGIN_SUCCESS,
   SIGN_UP_SUCCESS,
+  USER_NOT_ACTIVE,
   USER_NOT_FOUND,
 } from './constant/message';
 import { LoginDTO } from './dto';
-import { SignUpDTO } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,15 +27,21 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {}
 
   async login(loginDTO: LoginDTO, res: Response): Promise<Response> {
-    const userList = await this.userRepository.find({
-      where: { email: loginDTO.email },
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    queryBuilder.addSelect('user.password').where({
+      email: loginDTO.email,
     });
+
+    const { entities: userList } = await queryBuilder.getRawAndEntities();
     if (userList.length === 0) {
-      this.throwErrorNotFound();
+      throw new NotFoundException(USER_NOT_FOUND);
     }
+
     const dataUser = userList[0];
     const isPasswordMatched = await argon.verify(
       dataUser.password,
@@ -36,44 +49,28 @@ export class AuthService {
     );
 
     if (!isPasswordMatched) {
-      this.throwErrorNotFound();
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
+
+    if (dataUser.status !== Status.ACTIVE) {
+      throw new NotAcceptableException(USER_NOT_ACTIVE);
     }
 
     const token = await this.generateToken(loginDTO.email, dataUser.id);
 
-    console.log(userList);
     return res.status(HttpStatus.OK).json({
       message: LOGIN_SUCCESS,
       ...token,
     });
   }
 
-  async signUp(signUpDTO: SignUpDTO, res: Response): Promise<Response> {
-    const userList = await this.userRepository.find({
-      where: {
-        email: signUpDTO.email,
-      },
-    });
-    if (userList.length > 0) {
-      return res
-        .status(HttpStatus.NOT_ACCEPTABLE)
-        .json({ message: EMAIL_ALREADY_EXIST });
-    }
-
-    const dataSubmit = {
-      ...signUpDTO,
-      password: await argon.hash(signUpDTO.password),
-    };
-
-    await this.userRepository.save(dataSubmit);
-
-    return res.status(HttpStatus.CREATED).json({
-      message: SIGN_UP_SUCCESS,
-    });
-  }
-
-  throwErrorNotFound() {
-    throw new NotFoundException(USER_NOT_FOUND);
+  async signUp(signUpDTO: CreateUserDTO, res: Response): Promise<Response> {
+    return this.userService.addUserToDatabase(
+      signUpDTO,
+      res,
+      Status.PENDING,
+      SIGN_UP_SUCCESS,
+    );
   }
 
   async generateToken(
