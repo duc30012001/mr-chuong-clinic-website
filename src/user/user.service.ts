@@ -113,6 +113,19 @@ export class UserService {
     return user;
   }
 
+  async getUserLoggedIn(authorizationHeader: string): Promise<UserEntity> {
+    const token = authorizationHeader.split(' ')[1];
+    const decodedToken = await this.jwtService.decode(token);
+    console.log('decodedToken:', decodedToken);
+    const user = await this.userRepository.findOneBy({
+      id: decodedToken['id'],
+    });
+    if (user === null) {
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
+    return user;
+  }
+
   async updateUserById(
     userId: string,
     dataUpdate: UpdateUserDto,

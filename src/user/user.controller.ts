@@ -60,6 +60,14 @@ export class UserController {
     return this.userService.updatePassword(id, dataUpdate);
   }
 
+  @Get('/profile')
+  @HttpCode(HttpStatus.OK)
+  getProfileUserLoggedIn(
+    @Headers('authorization') authorizationHeader: string,
+  ): Promise<UserEntity> {
+    return this.userService.getUserLoggedIn(authorizationHeader);
+  }
+
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   getUserById(@Param('id') id: string): Promise<UserEntity> {
