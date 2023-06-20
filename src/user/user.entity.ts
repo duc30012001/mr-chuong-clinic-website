@@ -1,5 +1,5 @@
-import { Status } from 'src/utils/enum';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Status } from '../utils/enum';
 
 @Entity({ name: 'user' })
 export class UserEntity {

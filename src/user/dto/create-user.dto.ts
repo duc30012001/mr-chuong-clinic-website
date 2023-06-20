@@ -6,7 +6,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { INVALID_VALUE } from 'src/utils/message';
+import { INVALID_VALUE } from '../../utils/message';
 import { INVALID_PASSWORD_FORMAT } from '../constants/messages';
 
 export class CreateUserDto {

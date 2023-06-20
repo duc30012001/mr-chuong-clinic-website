@@ -8,12 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon from 'argon2';
 import { Response } from 'express';
-import { UserEntity } from 'src/user/user.entity';
-import { UserService } from 'src/user/user.service';
-import { ResponseDto } from 'src/utils/dto';
-import { Status } from 'src/utils/enum';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserEntity } from '../user/user.entity';
+import { UserService } from '../user/user.service';
+import { ResponseDto } from '../utils/dto';
+import { Status } from '../utils/enum';
 import {
   LOGIN_SUCCESS,
   SIGN_UP_SUCCESS,
