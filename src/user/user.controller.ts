@@ -1,3 +1,5 @@
+import { JwtGuard } from '@/auth/guard';
+import { PageDto, ResponseDto, UpdateStatusDto } from '@/utils/dto';
 import {
   Body,
   Controller,
@@ -12,8 +14,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guard';
-import { PageDto, ResponseDto, UpdateStatusDto } from 'src/utils/dto';
 import {
   CreateUserDto,
   GetListUserDto,

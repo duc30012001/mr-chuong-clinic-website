@@ -1,5 +1,5 @@
+import { EMAIL_FORMAT } from '@/auth/constant/message';
 import { IsEmail, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
-import { EMAIL_FORMAT } from '../../auth/constant/message';
 
 export class UpdateUserDto {
   @IsEmail({}, { message: EMAIL_FORMAT })

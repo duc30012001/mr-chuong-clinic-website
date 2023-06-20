@@ -1,4 +1,4 @@
-import { Status } from 'src/utils/enum';
+import { Status } from '@/utils/enum';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'user' })

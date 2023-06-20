@@ -1,5 +1,5 @@
+import { Status } from '@/utils/enum';
 import { IsInt, Max, Min } from 'class-validator';
-import { Status } from 'src/utils/enum';
 import { INVALID_VALUE } from '../message';
 
 export class UpdateStatusDto {
