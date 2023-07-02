@@ -1,6 +1,6 @@
 import { PageMetaDtoParameters } from '../interfaces';
 
-export class PageMetaDto {
+export class PagePaginationDto {
   readonly page: number;
 
   readonly take: number;

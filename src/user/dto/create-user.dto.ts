@@ -5,13 +5,13 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  Min,
+  Length,
 } from 'class-validator';
 import { INVALID_PASSWORD_FORMAT } from '../constants';
 
 export class CreateUserDto {
   @IsString({ message: INVALID_VALUE })
-  @Min(6, { message: INVALID_PASSWORD_FORMAT })
+  @Length(6, 50, { message: INVALID_PASSWORD_FORMAT })
   password: string;
 
   @IsEmail({}, { message: INVALID_VALUE })
