@@ -1,5 +1,5 @@
 import { Status } from '@/utils/enum';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -32,4 +32,8 @@ export class UserEntity {
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   date_modified: Date;
+
+  @ManyToOne(() => UserEntity)
+  @JoinColumn({ name: 'user_creator' })
+  creator: UserEntity;
 }

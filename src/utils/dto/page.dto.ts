@@ -1,14 +1,14 @@
 import { IsArray } from 'class-validator';
-import { PageMetaDto } from './page-meta.dto';
+import { PagePaginationDto } from './page-meta.dto';
 
 export class PageDto<T> {
   @IsArray()
   readonly data: T[];
 
-  readonly meta: PageMetaDto;
+  readonly pagination: PagePaginationDto;
 
-  constructor(data: T[], meta: PageMetaDto) {
+  constructor(data: T[], pagination: PagePaginationDto) {
     this.data = data;
-    this.meta = meta;
+    this.pagination = pagination;
   }
 }

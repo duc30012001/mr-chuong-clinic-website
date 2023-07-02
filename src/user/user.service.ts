@@ -1,12 +1,11 @@
 import { EMAIL_ALREADY_EXIST } from '@/auth/constant/message';
 import {
   PageDto,
-  PageMetaDto,
-  PageOptionsDto,
+  PagePaginationDto,
   ResponseDto,
   UpdateStatusDto,
 } from '@/utils/dto';
-import { Order, Status } from '@/utils/enum';
+import { Status } from '@/utils/enum';
 import { UPDATE_SUCCESS } from '@/utils/message';
 import {
   Injectable,
@@ -20,7 +19,12 @@ import * as _ from 'lodash';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CREATE_USER_SUCCESS, USER_NOT_FOUND } from './constants/messages';
-import { CreateUserDto, UpdatePasswordDto, UpdateUserDto } from './dto';
+import {
+  CreateUserDto,
+  GetListUserDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
+} from './dto';
 import { UserEntity } from './user.entity';
 
 @Injectable()
@@ -32,19 +36,43 @@ export class UserService {
   ) {}
 
   public async getUserList(
-    pageOptionsDto: PageOptionsDto,
+    getListUserDto: GetListUserDto,
   ): Promise<PageDto<UserEntity>> {
+    const { search, status, skip, take, order, orderBy, columns } =
+      getListUserDto;
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-    queryBuilder
-      .orderBy('user.date_modified', Order.DESC)
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take);
+    if (columns && columns !== '*' && columns !== 'password') {
+      const selectedColumns = columns
+        .split(',')
+        .filter((item) => item !== 'password');
+      queryBuilder.select(selectedColumns.map((column) => `user.${column}`));
+    }
+
+    if (status) {
+      queryBuilder.andWhere('user.status = :status', { status });
+    }
+
+    if (search) {
+      const lowercaseSearch = search.toLowerCase();
+      queryBuilder.andWhere('LOWER(user.email) LIKE :email', {
+        email: `%${lowercaseSearch}%`,
+      });
+    }
+
+    if (!columns || columns.includes('user_creator')) {
+      queryBuilder.leftJoinAndSelect('user.creator', 'creator');
+    }
+
+    queryBuilder.orderBy(`user.${orderBy}`, order).skip(skip).take(take);
 
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
 
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    const pageMetaDto = new PagePaginationDto({
+      itemCount,
+      pageOptionsDto: getListUserDto,
+    });
 
     return new PageDto(entities, pageMetaDto);
   }

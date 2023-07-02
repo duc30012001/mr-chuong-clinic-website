@@ -23,16 +23,6 @@ dotenv.config();
       entities: [...entities],
       synchronize: true,
     }),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: '93.92.112.194',
-    //   port: 3306,
-    //   username: 'db_vietduc',
-    //   password: 'db_vietduc',
-    //   database: 'db_vietduc',
-    //   entities: [...entities],
-    //   synchronize: true,
-    // }),
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
