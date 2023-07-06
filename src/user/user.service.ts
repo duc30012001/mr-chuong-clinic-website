@@ -165,11 +165,14 @@ export class UserService {
     return new ResponseDto(UPDATE_SUCCESS);
   }
 
-  async updateDataUserInDB(userId: string, dataUpdate) {
+  async updateDataUserInDB(
+    userId: string,
+    dataUpdate: UpdateUserDto | UpdatePasswordDto | UpdateStatusDto,
+  ) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     await queryBuilder
       .update(UserEntity)
-      .set(dataUpdate)
+      .set({ ...dataUpdate, date_modified: new Date() })
       .where({
         id: userId,
       })
