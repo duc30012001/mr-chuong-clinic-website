@@ -1,8 +1,8 @@
 import { Status } from '@/utils/enum';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'user' })
-export class UserEntity {
+@Entity({ name: 'article-category' })
+export class ArticleCategoryEntity {
   @PrimaryColumn('uuid')
   id: string;
 
@@ -15,25 +15,19 @@ export class UserEntity {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   date_modified: Date;
 
-  @Column({ default: '' })
-  full_name: string;
+  @Column({ nullable: false })
+  article_category_name: string;
 
-  @Column({ select: false })
-  password: string;
+  @Column({ nullable: true })
+  description: string;
 
   @Column({ unique: true })
-  email: string;
+  slug: string;
 
   @Column({ nullable: true })
-  phone_number: string;
+  parent_id: string;
 
-  @Column({ nullable: true })
-  avatar_url: string;
-
-  @Column({ nullable: true })
-  user_creator: string;
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'user_creator' })
-  creator: UserEntity;
+  @ManyToOne(() => ArticleCategoryEntity)
+  @JoinColumn({ name: 'parent_id' })
+  parent: ArticleCategoryEntity;
 }

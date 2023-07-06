@@ -1,8 +1,10 @@
+import { ArticleCategoryEntity } from '@/article-category/article-category.entity';
+import { UserEntity } from '@/user/user.entity';
 import { Status } from '@/utils/enum';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'user' })
-export class UserEntity {
+@Entity({ name: 'article' })
+export class ArticleEntity {
   @PrimaryColumn('uuid')
   id: string;
 
@@ -15,23 +17,24 @@ export class UserEntity {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   date_modified: Date;
 
-  @Column({ default: '' })
-  full_name: string;
+  @Column({ nullable: false })
+  article_title: string;
 
-  @Column({ select: false })
-  password: string;
+  @Column({ nullable: true })
+  description: string;
 
   @Column({ unique: true })
-  email: string;
+  slug: string;
 
-  @Column({ nullable: true })
-  phone_number: string;
-
-  @Column({ nullable: true })
-  avatar_url: string;
+  @Column({ nullable: false })
+  article_category_id: string;
 
   @Column({ nullable: true })
   user_creator: string;
+
+  @ManyToOne(() => ArticleCategoryEntity)
+  @JoinColumn({ name: 'article_category_id' })
+  article_category: ArticleCategoryEntity;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_creator' })
