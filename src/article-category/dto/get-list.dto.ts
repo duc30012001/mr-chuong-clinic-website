@@ -1,11 +1,11 @@
 import { PageOptionsDto } from '@/utils/dto';
 import { Status } from '@/utils/enum';
 import { IsEnum, IsOptional } from 'class-validator';
-import { UserEntity } from '../user.entity';
+import { ArticleCategoryEntity } from '../article-category.entity';
 
-export class GetListUserDto extends PageOptionsDto {
+export class GetListArticleCategoryDto extends PageOptionsDto {
   @IsOptional()
-  orderBy?: keyof UserEntity = 'date_modified';
+  orderBy?: keyof ArticleCategoryEntity = 'date_modified';
 
   @IsOptional()
   search?: string;

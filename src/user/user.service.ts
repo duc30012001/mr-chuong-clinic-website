@@ -1,3 +1,12 @@
+import { EMAIL_ALREADY_EXIST } from '@/auth/constant/message';
+import {
+  PageDto,
+  PagePaginationDto,
+  ResponseDto,
+  UpdateStatusDto,
+} from '@/utils/dto';
+import { Status } from '@/utils/enum';
+import { UPDATE_SUCCESS } from '@/utils/message';
 import {
   Injectable,
   NotAcceptableException,
@@ -7,20 +16,15 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon from 'argon2';
 import * as _ from 'lodash';
-import { EMAIL_ALREADY_EXIST } from 'src/auth/constant/message';
-import {
-  PageDto,
-  PageMetaDto,
-  PageOptionsDto,
-  ResponseDto,
-  UpdateStatusDto,
-} from 'src/utils/dto';
-import { Order, Status } from 'src/utils/enum';
-import { UPDATE_SUCCESS } from 'src/utils/message';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CREATE_USER_SUCCESS, USER_NOT_FOUND } from './constants/messages';
-import { CreateUserDto, UpdatePasswordDto, UpdateUserDto } from './dto';
+import {
+  CreateUserDto,
+  GetListUserDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
+} from './dto';
 import { UserEntity } from './user.entity';
 
 @Injectable()
@@ -32,19 +36,44 @@ export class UserService {
   ) {}
 
   public async getUserList(
-    pageOptionsDto: PageOptionsDto,
+    getListUserDto: GetListUserDto,
   ): Promise<PageDto<UserEntity>> {
+    const { search, status, skip, take, order, orderBy, columns } =
+      getListUserDto;
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-    queryBuilder
-      .orderBy('user.date_modified', Order.DESC)
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take);
+    if (columns && columns !== '*' && columns !== 'password') {
+      const selectedColumns = columns
+        .split(',')
+        .filter((item) => item !== 'password');
+      queryBuilder.select(selectedColumns.map((column) => `user.${column}`));
+    }
+
+    if (status) {
+      queryBuilder.andWhere('user.status = :status', { status });
+    }
+
+    if (search) {
+      const lowercaseSearch = search.toLowerCase();
+      queryBuilder.andWhere('LOWER(user.email) LIKE :email', {
+        email: `%${lowercaseSearch}%`,
+      });
+    }
+
+    if (!columns || columns.includes('user_creator')) {
+      queryBuilder.leftJoin('user.creator', 'creator');
+      queryBuilder.addSelect(['creator.id', 'creator.email']);
+    }
+
+    queryBuilder.orderBy(`user.${orderBy}`, order).skip(skip).take(take);
 
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
 
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    const pageMetaDto = new PagePaginationDto({
+      itemCount,
+      pageOptionsDto: getListUserDto,
+    });
 
     return new PageDto(entities, pageMetaDto);
   }
@@ -113,6 +142,19 @@ export class UserService {
     return user;
   }
 
+  async getUserLoggedIn(authorizationHeader: string): Promise<UserEntity> {
+    const token = authorizationHeader.split(' ')[1];
+    const decodedToken = await this.jwtService.decode(token);
+    console.log('decodedToken:', decodedToken);
+    const user = await this.userRepository.findOneBy({
+      id: decodedToken['id'],
+    });
+    if (user === null) {
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
+    return user;
+  }
+
   async updateUserById(
     userId: string,
     dataUpdate: UpdateUserDto,
@@ -124,11 +166,14 @@ export class UserService {
     return new ResponseDto(UPDATE_SUCCESS);
   }
 
-  async updateDataUserInDB(userId: string, dataUpdate) {
+  async updateDataUserInDB(
+    userId: string,
+    dataUpdate: UpdateUserDto | UpdatePasswordDto | UpdateStatusDto,
+  ) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     await queryBuilder
       .update(UserEntity)
-      .set(dataUpdate)
+      .set({ ...dataUpdate, date_modified: new Date() })
       .where({
         id: userId,
       })

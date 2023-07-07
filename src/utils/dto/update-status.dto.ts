@@ -1,10 +1,7 @@
-import { IsInt, Max, Min } from 'class-validator';
-import { Status } from 'src/utils/enum';
-import { INVALID_VALUE } from '../message';
+import { Status } from '@/utils/enum';
+import { IsEnum } from 'class-validator';
 
 export class UpdateStatusDto {
-  @IsInt({ message: INVALID_VALUE })
-  @Min(-1, { message: INVALID_VALUE })
-  @Max(1, { message: INVALID_VALUE })
+  @IsEnum(Status)
   status: Status;
 }

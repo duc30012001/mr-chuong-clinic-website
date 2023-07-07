@@ -1,5 +1,5 @@
-import { IsEmail, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
-import { EMAIL_FORMAT } from '../../auth/constant/message';
+import { EMAIL_FORMAT } from '@/auth/constant/message';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
   @IsEmail({}, { message: EMAIL_FORMAT })
@@ -10,7 +10,7 @@ export class UpdateUserDto {
   @IsOptional()
   avatar_url: string;
 
-  @IsPhoneNumber()
+  @IsString()
   @IsOptional()
   phone_number: string;
 
