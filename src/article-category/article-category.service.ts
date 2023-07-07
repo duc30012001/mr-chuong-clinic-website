@@ -42,22 +42,23 @@ export class ArticleCategoryService {
       const selectedColumns = columns
         .split(',')
         .filter((item) => item !== 'password');
-      queryBuilder.select(selectedColumns.map((column) => `user.${column}`));
+      queryBuilder.select(
+        selectedColumns.map((column) => `article-category.${column}`),
+      );
     }
 
     if (status) {
-      queryBuilder.andWhere('user.status = :status', { status });
+      queryBuilder.andWhere('article-category.status = :status', { status });
     }
 
     if (search) {
       const lowercaseSearch = search.toLowerCase();
-      queryBuilder.andWhere('LOWER(user.email) LIKE :email', {
-        email: `%${lowercaseSearch}%`,
-      });
-    }
-
-    if (!columns || columns.includes('parent_id')) {
-      queryBuilder.leftJoinAndSelect('article-category.parent', 'parent');
+      queryBuilder.andWhere(
+        'LOWER(article-category.article_category_name) LIKE :article_category_name',
+        {
+          article_category_name: `%${lowercaseSearch}%`,
+        },
+      );
     }
 
     queryBuilder
@@ -99,11 +100,11 @@ export class ArticleCategoryService {
   }
 
   async updateStatus(
-    userId: string,
+    id: string,
     dataUpdate: UpdateStatusDto,
   ): Promise<ResponseDto> {
-    await this.hasArticleCategory({ id: userId });
-    await this.updateDataArticleCategoryInDB(userId, dataUpdate);
+    await this.hasArticleCategory({ id });
+    await this.updateDataArticleCategoryInDB(id, dataUpdate);
     return new ResponseDto(UPDATE_SUCCESS);
   }
 

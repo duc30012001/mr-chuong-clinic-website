@@ -61,7 +61,8 @@ export class UserService {
     }
 
     if (!columns || columns.includes('user_creator')) {
-      queryBuilder.leftJoinAndSelect('user.creator', 'creator');
+      queryBuilder.leftJoin('user.creator', 'creator');
+      queryBuilder.addSelect(['creator.id', 'creator.email']);
     }
 
     queryBuilder.orderBy(`user.${orderBy}`, order).skip(skip).take(take);

@@ -5,7 +5,7 @@ import { Order } from '../enum';
 export class PageOptionsDto {
   @IsEnum(Order)
   @IsOptional()
-  readonly order?: Order = Order.ASC;
+  readonly order?: Order = Order.DESC;
 
   @Type(() => Number)
   @IsInt()
