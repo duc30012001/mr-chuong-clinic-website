@@ -36,8 +36,12 @@ export class ArticleCategoryController {
 
   @Post('/create')
   @HttpCode(HttpStatus.CREATED)
-  createArticleCategory(@Body() createUserDto: ArticleCategoryPayloadDto) {
-    return this.articleCategoryService.createArticleCategory(createUserDto);
+  createArticleCategory(
+    @Body() createArticleCategoryDto: ArticleCategoryPayloadDto,
+  ) {
+    return this.articleCategoryService.createArticleCategory(
+      createArticleCategoryDto,
+    );
   }
 
   @Patch('/update-status/:id')
@@ -49,11 +53,11 @@ export class ArticleCategoryController {
   @Put('update/:id')
   @HttpCode(HttpStatus.OK)
   updateArticleCategory(
-    @Param('id') userId: string,
+    @Param('id') articleCategoryId: string,
     @Body() dataUpdate: ArticleCategoryPayloadDto,
   ): Promise<ResponseDto> {
     return this.articleCategoryService.updateArticleCategoryById(
-      userId,
+      articleCategoryId,
       dataUpdate,
     );
   }

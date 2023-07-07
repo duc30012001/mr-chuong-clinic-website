@@ -1,5 +1,5 @@
 import { Status } from '@/utils/enum';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'article-category' })
 export class ArticleCategoryEntity {
@@ -23,11 +23,4 @@ export class ArticleCategoryEntity {
 
   @Column({ unique: true })
   slug: string;
-
-  @Column({ nullable: true })
-  parent_id: string;
-
-  @ManyToOne(() => ArticleCategoryEntity)
-  @JoinColumn({ name: 'parent_id' })
-  parent: ArticleCategoryEntity;
 }
