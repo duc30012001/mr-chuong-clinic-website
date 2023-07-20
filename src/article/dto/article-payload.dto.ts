@@ -16,4 +16,8 @@ export class ArticlePayloadDto {
 
   @IsString()
   description: string;
+
+  @IsString()
+  @IsOptional()
+  thumbnail_url: string;
 }
