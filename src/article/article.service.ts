@@ -28,8 +28,16 @@ export class ArticleService {
   public async getArticleList(
     getListArticleDto: GetListArticleDto,
   ): Promise<PageDto<ArticleEntity>> {
-    const { search, status, skip, take, order, orderBy, columns } =
-      getListArticleDto;
+    const {
+      search,
+      status,
+      skip,
+      take,
+      order,
+      orderBy,
+      columns,
+      article_category_id,
+    } = getListArticleDto;
     const queryBuilder = this.articleRepository.createQueryBuilder('article');
 
     if (columns && columns !== '*') {
@@ -41,6 +49,13 @@ export class ArticleService {
 
     if (status) {
       queryBuilder.andWhere('article.status = :status', { status });
+    }
+
+    if (article_category_id) {
+      queryBuilder.andWhere(
+        'article.article_category_id = :article_category_id',
+        { article_category_id },
+      );
     }
 
     if (search) {
@@ -85,6 +100,11 @@ export class ArticleService {
       .select()
       .leftJoin('article.creator', 'creator')
       .addSelect(['creator.id', 'creator.email'])
+      .leftJoin('article.article_category', 'article_category')
+      .addSelect([
+        'article_category.id',
+        'article_category.article_category_name',
+      ])
       .where('article.id = :articleId', { articleId })
       .getOne();
     if (article === null) {
@@ -99,6 +119,11 @@ export class ArticleService {
       .select()
       .leftJoin('article.creator', 'creator')
       .addSelect(['creator.id', 'creator.email'])
+      .leftJoin('article.article_category', 'article_category')
+      .addSelect([
+        'article_category.id',
+        'article_category.article_category_name',
+      ])
       .where('article.slug = :slug', { slug })
       .getOne();
     if (article === null) {
