@@ -35,6 +35,9 @@ export class ArticleEntity {
   @Column({ nullable: true })
   user_creator: string;
 
+  @Column({ nullable: true })
+  thumbnail_url: string;
+
   @ManyToOne(() => ArticleCategoryEntity)
   @JoinColumn({ name: 'article_category_id' })
   article_category: ArticleCategoryEntity;
