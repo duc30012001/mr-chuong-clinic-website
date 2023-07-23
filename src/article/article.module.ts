@@ -3,9 +3,8 @@ import { entities } from '@/utils/entities';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArticlePublicController } from './article-public.controller';
-import { ArticleController } from './article.controller';
 import { ArticleService } from './article.service';
+import { ArticleController, ArticlePublicController } from './controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature(entities), JwtModule.register({})],

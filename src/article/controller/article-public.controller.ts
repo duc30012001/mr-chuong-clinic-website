@@ -7,9 +7,9 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import { ArticleEntity } from './article.entity';
-import { ArticleService } from './article.service';
-import { GetListArticlePublicDto } from './dto';
+import { ArticleEntity } from '../article.entity';
+import { ArticleService } from '../article.service';
+import { GetListArticlePublicDto } from '../dto';
 
 @Controller('tin-tuc')
 export class ArticlePublicController {

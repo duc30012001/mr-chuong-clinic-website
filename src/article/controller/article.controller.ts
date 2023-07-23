@@ -14,9 +14,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ArticleEntity } from './article.entity';
-import { ArticleService } from './article.service';
-import { ArticlePayloadDto, GetListArticleDto } from './dto';
+import { ArticleEntity } from '../article.entity';
+import { ArticleService } from '../article.service';
+import { ArticlePayloadDto, GetListArticleDto } from '../dto';
 
 @UseGuards(JwtGuard)
 @Controller('article')

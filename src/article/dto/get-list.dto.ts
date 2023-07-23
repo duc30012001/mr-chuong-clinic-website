@@ -10,6 +10,9 @@ export class GetListArticleDto extends PageOptionsDto {
   @IsOptional()
   search?: string;
 
+  @IsOptional()
+  article_category_slug?: string;
+
   @IsEnum(Status)
   @IsOptional()
   status?: Status;
