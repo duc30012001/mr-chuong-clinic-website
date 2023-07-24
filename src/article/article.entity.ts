@@ -20,7 +20,7 @@ export class ArticleEntity {
   @Column({ nullable: false })
   article_title: string;
 
-  @Column({ nullable: false, type: 'text' })
+  @Column({ nullable: false, type: 'longtext' })
   content: string;
 
   @Column({ nullable: true })
