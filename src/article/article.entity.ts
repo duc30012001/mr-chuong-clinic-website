@@ -23,6 +23,9 @@ export class ArticleEntity {
   @Column({ nullable: false, type: 'longtext' })
   content: string;
 
+  @Column({ nullable: false, type: 'longblob' })
+  content1: string;
+
   @Column({ nullable: true })
   description: string;
 
