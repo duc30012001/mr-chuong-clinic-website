@@ -21,6 +21,9 @@ export class AppointmentEntity {
   @Column({ nullable: false })
   appointment_time: Date;
 
+  @Column({ nullable: false })
+  reason: string;
+
   @Column({ nullable: true })
   patient_phone_number: string;
 
