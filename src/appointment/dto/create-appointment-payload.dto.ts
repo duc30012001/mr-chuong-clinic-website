@@ -11,6 +11,9 @@ export class AppointmentPayloadDto {
   patient_phone_number: string;
 
   @IsString()
+  reason: string;
+
+  @IsString()
   @IsOptional()
   patient_address: string;
 
